@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt_BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gurus Digitais</title>
+
+  <style>
+    body{
+      margin: 1px;
+      background: #eee;
+      text-align: center;
+    }
+
+    img {
+      border: solid 2px #2d74a1;
+      border-radius: 50%;
+      margin: 3px;
+      background-color: #fff;
+    }
+
+    span[data-url] {
+      cursor: pointer;
+    }
+
+    .user-info {
+      position: fixed;
+      display: none;
+      height: 100%;
+      width: 100%;
+      background-color: rgba(255, 255, 255, .95);
+      top: 0;
+      bottom: 0;
+    }
+
+    h1 {
+      text-indent: -600px;
+      overflow: hidden;
+      background: url(logo.png);
+      width: 233px;
+      height: 211px;
+      display: inline-block;
+      margin: 50px 0 100px;
+    }
+  </style>
+
+</head>
+<body>
+  <h1>Gurus Digitais</h1>
+  <div class="user-info"></div>
+  <div class="users"></div>
+
+  <script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
+  <script>
+    var br_users = ( function() {
+
+    function init(){
+      searchUsers()
+    }
+
+    function deleteUsers(){
+      $('.users').html('')
+    }
+
+    function searchUsers(){
+      jQuery.ajax({
+        url: 'https://api.github.com/search/users',
+        data: {
+          q: searchQuery(),
+          per_page: 100
+        },
+        success: getUsers
+      })
+    }
+
+    function searchQuery(){
+      var q = []
+        , params
+        , language = $('select#language').val()
+        , location =
+          [ 'Brasil'
+          , 'Brazil'
+          , 'BR'
+          , 'Acre'
+          , 'Alagoas'
+          , 'Amapá'
+          , 'Amazonas'
+          , 'Bahia'
+          , 'Ceará'
+          , 'Distrito Federal'
+          , 'Espírito Santo'
+          , 'Goiás'
+          , 'Maranhão'
+          , 'Mato Grosso'
+          , 'Mato Grosso do Sul'
+          , 'Minas Gerais'
+          , 'Pará'
+          , 'Paraíba'
+          , 'Paraná'
+          , 'Pernambuco'
+          , 'Piauí'
+          , 'Rio de Janeiro'
+          , 'Rio Grande do Norte'
+          , 'Rio Grande do Sul'
+          , 'Rondônia'
+          , 'Roraima'
+          , 'Santa Catarina'
+          , 'São Paulo'
+          , 'Sergipe'
+          , 'Tocantins'
+          ]
+
+      params = {
+        language: language,
+        location: location,
+        type: ['Users']
+      }
+
+      $.each(params, function(item){
+        for (var i = 0; i < this.length; i++) {
+          q.push( item + ':"' + this[i] + '"' );
+        };
+      })
+
+      return q.join(' ')
+    }
+
+    function getUsers(data){
+      for (var i = 0, count = data.items.length; i < count; i++) {
+        render( data.items[i], 160 - i )
+      };
+    }
+
+    function render(user, imgsize){
+      var output = ''
+
+      output += '<a href="' + user.html_url + '" target="_blank">'
+      output += '<img src="'+ user.avatar_url + '&s=' + imgsize + '" title="' + user.login + '" height="' + imgsize + '" width="' + imgsize + '" >'
+      output += '</a>'
+
+      $('.users').append(output)
+    }
+
+    return {init: init}
+  })()
+
+  br_users.init();
+  </script>
+</body>
+</html>
